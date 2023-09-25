@@ -2,9 +2,9 @@ package save
 
 import (
 	"fmt"
-	"pwd-manager/internal/app/domain"
-	"pwd-manager/internal/pkg/fsutil"
-	"pwd-manager/internal/pkg/secutil"
+	"github.com/swicherwich/pwdmg/internal/app/domain"
+	"github.com/swicherwich/pwdmg/internal/pkg/fsutil"
+	"github.com/swicherwich/pwdmg/internal/pkg/secutil"
 	"time"
 )
 

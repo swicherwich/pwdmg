@@ -4,11 +4,11 @@ import (
 	"errors"
 	"fmt"
 	"github.com/atotto/clipboard"
+	"github.com/swicherwich/pwdmg/internal/app/command/get"
+	"github.com/swicherwich/pwdmg/internal/app/command/save"
 	"github.com/urfave/cli/v2"
 	"golang.org/x/crypto/ssh/terminal"
 	"os"
-	"pwd-manager/internal/app/command/get"
-	"pwd-manager/internal/app/command/save"
 	"syscall"
 )
 

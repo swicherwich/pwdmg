@@ -1,4 +1,4 @@
-module pwd-manager
+module github.com/swicherwich/pwdmg
 
 go 1.20
 
