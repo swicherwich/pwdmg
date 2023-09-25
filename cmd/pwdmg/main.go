@@ -1,10 +1,13 @@
 package main
 
 import (
+	"errors"
 	"fmt"
+	"github.com/atotto/clipboard"
 	"github.com/urfave/cli/v2"
 	"golang.org/x/crypto/ssh/terminal"
 	"os"
+	"pwd-manager/internal/app/command/get"
 	"pwd-manager/internal/app/command/save"
 	"syscall"
 )
@@ -22,17 +25,26 @@ func main() {
 					{
 						Name:    "pwd",
 						Aliases: []string{"d"},
-						Usage:   "Get password by domain",
+						Usage:   "Get password by domain and login",
 						Action: func(c *cli.Context) error {
 							domain := c.Args().Get(0)
 							login := c.Args().Get(1)
 
 							if domain == "" || login == "" {
-								fmt.Println("Usage: pwdmg get pwd <domain> <login>")
-								return nil
+								return errors.New("usage: pwdmg get pwd <domain> <login>")
 							}
 
-							fmt.Printf("Getting password for domain: %s, login: %s\n", domain, login)
+							pwd, err := get.PwdByLogin(domain, login)
+							if err != nil {
+								return err
+							}
+
+							err = clipboard.WriteAll(pwd)
+							if err != nil {
+								return err
+							}
+
+							fmt.Println("Password copied to clipboard")
 							return nil
 						},
 					},

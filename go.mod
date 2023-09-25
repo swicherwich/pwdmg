@@ -3,6 +3,7 @@ module pwd-manager
 go 1.20
 
 require (
+	github.com/atotto/clipboard v0.1.4
 	github.com/urfave/cli/v2 v2.25.7
 	golang.org/x/crypto v0.13.0
 )
