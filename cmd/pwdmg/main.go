@@ -14,6 +14,7 @@ func main() {
 		Commands: []*cli.Command{
 			config.GetCommand(),
 			config.SaveCommand(),
+			config.ImportCommand(),
 		},
 	}
 

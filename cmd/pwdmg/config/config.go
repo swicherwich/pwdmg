@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/atotto/clipboard"
 	"github.com/swicherwich/pwdmg/internal/app/command/get"
+	"github.com/swicherwich/pwdmg/internal/app/command/importpwd"
 	"github.com/swicherwich/pwdmg/internal/app/command/save"
 	"github.com/urfave/cli/v2"
 	"golang.org/x/crypto/ssh/terminal"
@@ -76,6 +77,39 @@ func SaveCommand() *cli.Command {
 			}
 
 			save.PersistAccount(domain, login, pwd)
+			return nil
+		},
+	}
+}
+
+func ImportCommand() *cli.Command {
+	return &cli.Command{
+		Name:        "import",
+		Usage:       "pwdmg import",
+		Description: "Save password for provided domain and login account",
+		Flags: []cli.Flag{
+			&cli.StringFlag{
+				Name:    "provider",
+				Aliases: []string{"p"},
+				Usage:   "passwords import provider (for now support only chrome)",
+			},
+			&cli.StringFlag{
+				Name:    "file",
+				Aliases: []string{"f"},
+				Usage:   "passwords import file (for now support only csv format)",
+			},
+		},
+		Action: func(c *cli.Context) error {
+			p := c.String("provider")
+			f := c.String("file")
+
+			switch p {
+			case "chrome", "Chrome":
+				importpwd.ImportFromChrome(f)
+			default:
+				fmt.Printf("Provider %s is unsupported\n", p)
+			}
+
 			return nil
 		},
 	}
