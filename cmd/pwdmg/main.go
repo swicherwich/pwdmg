@@ -20,18 +20,20 @@ func main() {
 			{
 				Name:    "get",
 				Aliases: []string{"g"},
-				Usage:   "TODO usage",
+				Usage:   "pwdmg get",
 				Subcommands: []*cli.Command{
 					{
-						Name:    "pwd",
-						Aliases: []string{"d"},
-						Usage:   "Get password by domain and login",
+						Name:        "pwd",
+						Usage:       "pwdmg get pwd <domain> <login>",
+						Description: "Get password by domain and login",
 						Action: func(c *cli.Context) error {
 							domain := c.Args().Get(0)
 							login := c.Args().Get(1)
 
+							fmt.Println(domain, login)
+
 							if domain == "" || login == "" {
-								return errors.New("usage: pwdmg get pwd <domain> <login>")
+								return errors.New("domain or login cannot be empty")
 							}
 
 							pwd, err := get.PwdByLogin(domain, login)
@@ -51,62 +53,32 @@ func main() {
 				},
 			},
 			{
-				Name:    "save",
-				Aliases: []string{"s"},
-				Usage:   "Save password for provided domain and login account",
-				Subcommands: []*cli.Command{
-					{
-						Name:        "pwd",
-						Usage:       "pwdmg save <domain> <login>",
-						Description: "Save password for provided domain and login account",
-						Action: func(c *cli.Context) error {
-							domain := c.Args().Get(0)
-							login := c.Args().Get(1)
+				Name:        "save",
+				Aliases:     []string{"s"},
+				Usage:       "pwdmg save <domain> <login>",
+				Description: "Save password for provided domain and login account",
+				Action: func(c *cli.Context) error {
+					domain := c.Args().Get(0)
+					login := c.Args().Get(1)
 
-							if domain == "" || login == "" {
-								fmt.Println("Usage: pwdmg save <domain> <login>")
-								return nil
-							}
+					if domain == "" || login == "" {
+						return errors.New("domain or login cannot be empty")
+					}
 
-							fmt.Print("Password: ")
-							pwdB, err := terminal.ReadPassword(syscall.Stdin)
-							pwd := string(pwdB)
+					fmt.Print("Password: ")
+					pwdB, err := terminal.ReadPassword(syscall.Stdin)
+					pwd := string(pwdB)
 
-							if err != nil {
-								fmt.Println("Error reading password: ", err)
-								os.Exit(1)
-							}
+					if err != nil {
+						return errors.New("error reading password")
+					}
 
-							if pwd == "" {
-								fmt.Println("Invalid pwd")
-								os.Exit(1)
-							}
+					if pwd == "" {
+						return errors.New("invalid pwd")
+					}
 
-							save.PersistAccount(domain, login, pwd)
-							return nil
-						},
-					},
-				},
-			},
-			{
-				Name:    "list",
-				Aliases: []string{"l"},
-				Usage:   "TODO usage",
-				Subcommands: []*cli.Command{
-					{
-						Name:        "domain",
-						Aliases:     []string{"d"},
-						Usage:       "Usage: pwdmg list domain",
-						Description: "",
-						Action:      func(c *cli.Context) error { return nil },
-					},
-					{
-						Name:        "account",
-						Aliases:     []string{"acc"},
-						Usage:       "Usage: pwdmg list account",
-						Description: "",
-						Action:      func(c *cli.Context) error { return nil },
-					},
+					save.PersistAccount(domain, login, pwd)
+					return nil
 				},
 			},
 		},
