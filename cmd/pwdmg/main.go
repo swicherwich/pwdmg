@@ -17,8 +17,6 @@ func main() {
 		},
 	}
 
-	fmt.Println(app.Command("pwd").Command("get").Names())
-
 	err := app.Run(os.Args)
 	if err != nil {
 		fmt.Println(err)
