@@ -6,7 +6,9 @@ import (
 	"github.com/atotto/clipboard"
 	"github.com/swicherwich/pwdmg/internal/app/command/get"
 	"github.com/swicherwich/pwdmg/internal/app/command/importpwd"
+	"github.com/swicherwich/pwdmg/internal/app/command/remove"
 	"github.com/swicherwich/pwdmg/internal/app/command/save"
+	"github.com/swicherwich/pwdmg/internal/app/command/update"
 	"github.com/urfave/cli/v2"
 	"golang.org/x/crypto/ssh/terminal"
 	"syscall"
@@ -19,6 +21,8 @@ func PwdCommand() *cli.Command {
 		Subcommands: []*cli.Command{
 			getCommand(),
 			saveCommand(),
+			updateCommand(),
+			removeCommand(),
 			importCommand(),
 		},
 	}
@@ -56,6 +60,30 @@ func getCommand() *cli.Command {
 	}
 }
 
+func removeCommand() *cli.Command {
+	return &cli.Command{
+		Name:        "remove",
+		Aliases:     []string{"rm"},
+		Usage:       "pwdmg pwd remove <domain> <login>",
+		Description: "Remove domain and login record",
+		Action: func(c *cli.Context) error {
+			domain := c.Args().Get(0)
+			login := c.Args().Get(1)
+
+			if domain == "" || login == "" {
+				return errors.New("domain or login cannot be empty")
+			}
+
+			fmt.Println("Login removed")
+
+			if err := remove.RemoveAccount(domain, login); err != nil {
+				return err
+			}
+			return nil
+		},
+	}
+}
+
 func saveCommand() *cli.Command {
 	return &cli.Command{
 		Name:        "save",
@@ -83,6 +111,40 @@ func saveCommand() *cli.Command {
 			}
 
 			save.PersistAccount(domain, login, pwd)
+			return nil
+		},
+	}
+}
+
+func updateCommand() *cli.Command {
+	return &cli.Command{
+		Name:        "update",
+		Aliases:     []string{"upd"},
+		Usage:       "pwdmg pwd update <domain> <login>",
+		Description: "Update password for provided domain and login account",
+		Action: func(c *cli.Context) error {
+			domain := c.Args().Get(0)
+			login := c.Args().Get(1)
+
+			if domain == "" || login == "" {
+				return errors.New("domain or login cannot be empty")
+			}
+
+			fmt.Print("Password: ")
+			pwdB, err := terminal.ReadPassword(syscall.Stdin)
+			pwd := string(pwdB)
+
+			if err != nil {
+				return errors.New("error reading password")
+			}
+
+			if pwd == "" {
+				return errors.New("empty pwd")
+			}
+
+			if err := update.UpdatePassword(domain, login, pwd); err != nil {
+				return err
+			}
 			return nil
 		},
 	}

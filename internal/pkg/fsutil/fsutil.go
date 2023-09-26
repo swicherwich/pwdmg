@@ -30,7 +30,7 @@ func PersistDataToFile(dFile string, d any) error {
 		fmt.Println("Error creating file:", err)
 		return err
 	}
-	defer file.Close()
+	defer func() { _ = file.Close() }()
 
 	jData, err := json.MarshalIndent(d, "", "  ")
 	if err != nil {
@@ -39,11 +39,6 @@ func PersistDataToFile(dFile string, d any) error {
 	}
 
 	_, err = file.Write(jData)
-	if err != nil {
-		fmt.Println("Error writing to file:", err)
-		return err
-	}
-	_, err = fmt.Fprintf(file, "")
 	if err != nil {
 		fmt.Println("Error writing to file:", err)
 		return err
