@@ -12,49 +12,55 @@ import (
 	"syscall"
 )
 
-func GetCommand() *cli.Command {
+func PwdCommand() *cli.Command {
 	return &cli.Command{
-		Name:    "get",
-		Aliases: []string{"g"},
-		Usage:   "pwdmg get",
+		Name:  "pwd",
+		Usage: "pwdmg pwd",
 		Subcommands: []*cli.Command{
-			{
-				Name:        "pwd",
-				Usage:       "pwdmg get pwd <domain> <login>",
-				Description: "Get password by domain and login",
-				Action: func(c *cli.Context) error {
-					domain := c.Args().Get(0)
-					login := c.Args().Get(1)
-
-					fmt.Println(domain, login)
-
-					if domain == "" || login == "" {
-						return errors.New("domain or login cannot be empty")
-					}
-
-					pwd, err := get.PwdByLogin(domain, login)
-					if err != nil {
-						return err
-					}
-
-					err = clipboard.WriteAll(pwd)
-					if err != nil {
-						return err
-					}
-
-					fmt.Println("Password copied to clipboard")
-					return nil
-				},
-			},
+			getCommand(),
+			saveCommand(),
+			importCommand(),
 		},
 	}
 }
 
-func SaveCommand() *cli.Command {
+func getCommand() *cli.Command {
+	return &cli.Command{
+		Name:        "get",
+		Aliases:     []string{"g"},
+		Usage:       "pwdmg pwd get <domain> <login>",
+		Description: "Get password by domain and login",
+		Action: func(c *cli.Context) error {
+			domain := c.Args().Get(0)
+			login := c.Args().Get(1)
+
+			fmt.Println(domain, login)
+
+			if domain == "" || login == "" {
+				return errors.New("domain or login cannot be empty")
+			}
+
+			pwd, err := get.PwdByLogin(domain, login)
+			if err != nil {
+				return err
+			}
+
+			err = clipboard.WriteAll(pwd)
+			if err != nil {
+				return err
+			}
+
+			fmt.Println("Password copied to clipboard")
+			return nil
+		},
+	}
+}
+
+func saveCommand() *cli.Command {
 	return &cli.Command{
 		Name:        "save",
 		Aliases:     []string{"s"},
-		Usage:       "pwdmg save <domain> <login>",
+		Usage:       "pwdmg pwd save <domain> <login>",
 		Description: "Save password for provided domain and login account",
 		Action: func(c *cli.Context) error {
 			domain := c.Args().Get(0)
@@ -82,21 +88,22 @@ func SaveCommand() *cli.Command {
 	}
 }
 
-func ImportCommand() *cli.Command {
+func importCommand() *cli.Command {
 	return &cli.Command{
 		Name:        "import",
-		Usage:       "pwdmg import",
+		Aliases:     []string{"i"},
+		Usage:       "pwdmg pwd import",
 		Description: "Save password for provided domain and login account",
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:    "provider",
 				Aliases: []string{"p"},
-				Usage:   "passwords import provider (for now support only chrome)",
+				Usage:   "passwords import provider (supports only chrome for now)",
 			},
 			&cli.StringFlag{
 				Name:    "file",
 				Aliases: []string{"f"},
-				Usage:   "passwords import file (for now support only csv format)",
+				Usage:   "passwords import file (supports only csv format for now)",
 			},
 		},
 		Action: func(c *cli.Context) error {

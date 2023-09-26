@@ -9,14 +9,15 @@ import (
 
 func main() {
 	app := &cli.App{
-		Name:  "pwdmg",
-		Usage: "Manage passwords",
+		Name:        "pwdmg",
+		Usage:       "pwdmg",
+		Description: "CLI password manager",
 		Commands: []*cli.Command{
-			config.GetCommand(),
-			config.SaveCommand(),
-			config.ImportCommand(),
+			config.PwdCommand(),
 		},
 	}
+
+	fmt.Println(app.Command("pwd").Command("get").Names())
 
 	err := app.Run(os.Args)
 	if err != nil {
